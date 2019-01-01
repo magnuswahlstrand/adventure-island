@@ -35,8 +35,16 @@ func subCharacter(step int, direction int) *ebiten.Image {
 	return characterImage.SubImage(image.Rect(sx, sy, sx+charWidth, sy+charHeight)).(*ebiten.Image)
 }
 
+const (
+	down int = iota + 1
+	right
+	up
+	left
+)
+
 type Player struct {
-	X, Y int
+	Coord
+	direction int
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
@@ -44,24 +52,47 @@ func (p *Player) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(p.X)*tileSize, float64(p.Y-1)*tileSize)
 	t := time.Now().Nanosecond() / 1000 / 1000 / 250 // 10th of 2nd
-	s := time.Now().Second()
-	screen.DrawImage(subCharacter(t%4, s%4), op)
+	screen.DrawImage(subCharacter(t%4, p.direction-down), op)
 }
 
-func (p *Player) Move(dx, dy int) {
-	p.X += dx
-	p.Y += dy
+func (p *Player) Move(c Coord) {
+	p.X += c.X
+	p.Y += c.Y
+}
+
+func (p *Player) MoveTo(c Coord) {
+	p.X = c.X
+	p.Y = c.Y
 }
 
 func (p *Player) MoveUp() {
-	p.Move(0, -1)
+	p.direction = up
+	p.Move(Coord{0, -1})
 }
 func (p *Player) MoveLeft() {
-	p.Move(-1, 0)
+	p.direction = left
+	p.Move(Coord{-1, 0})
 }
 func (p *Player) MoveDown() {
-	p.Move(0, 1)
+	p.direction = down
+	p.Move(Coord{0, 1})
 }
 func (p *Player) MoveRight() {
-	p.Move(1, 0)
+	p.direction = right
+	p.Move(Coord{1, 0})
+}
+
+func (p *Player) PrepareMove(c Coord) Coord {
+	switch c {
+	case Up:
+		p.direction = up
+	case Left:
+		p.direction = left
+	case Down:
+		p.direction = down
+	case Right:
+		p.direction = right
+
+	}
+	return p.Coord.Add(c)
 }

@@ -41,24 +41,73 @@ func init() {
 	tilesImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 }
 
-var p = Player{1, 2}
+var p = Player{Coord{1, 2}, right}
+
+var (
+	Up    = Coord{0, -1}
+	Left  = Coord{-1, 0}
+	Down  = Coord{0, 1}
+	Right = Coord{1, 0}
+)
+
+func leftPressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyA) || inpututil.IsKeyJustPressed(ebiten.KeyLeft)
+}
+
+func rightPressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyD) || inpututil.IsKeyJustPressed(ebiten.KeyRight)
+}
+
+func upPressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyW) || inpututil.IsKeyJustPressed(ebiten.KeyUp)
+}
+
+func downPressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyS) || inpututil.IsKeyJustPressed(ebiten.KeyDown)
+}
 
 func update(screen *ebiten.Image) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
 
-	switch {
-	case inpututil.IsKeyJustPressed(ebiten.KeyW):
-		p.MoveUp()
-	case inpututil.IsKeyJustPressed(ebiten.KeyA):
-		p.MoveLeft()
-	case inpututil.IsKeyJustPressed(ebiten.KeyS):
-		p.MoveDown()
-	case inpututil.IsKeyJustPressed(ebiten.KeyD):
-		p.MoveRight()
+	// if time.Now().Nanosecond()%10 == 0 {
+	// 	var c Coord
+	// 	switch rand.Intn(4) {
+	// 	case 0:
+	// 		c = p.PrepareMove(Up)
+	// 	case 1:
+	// 		c = p.PrepareMove(Left)
+	// 	case 2:
+	// 		c = p.PrepareMove(Down)
+	// 	case 3:
+	// 		c = p.PrepareMove(Right)
+	// 	}
 
+	// 	if world.ValidTarget(c) == true {
+	// 		p.MoveTo(c)
+	// 	}
+	// }
+
+	var c Coord
+
+	if leftPressed() || rightPressed() || upPressed() || downPressed() {
+		switch {
+		case upPressed():
+			c = p.PrepareMove(Up)
+		case leftPressed():
+			c = p.PrepareMove(Left)
+		case downPressed():
+			c = p.PrepareMove(Down)
+		case rightPressed():
+			c = p.PrepareMove(Right)
+		}
+
+		if world.ValidTarget(c) == true {
+			p.MoveTo(c)
+		}
 	}
+
 	world.Draw(screen)
 
 	p.Draw(screen)

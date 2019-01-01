@@ -8,6 +8,13 @@ import (
 
 type Coord struct{ X, Y int }
 
+func (c Coord) Add(d Coord) Coord {
+	return Coord{
+		X: c.X + d.X,
+		Y: c.Y + d.Y,
+	}
+}
+
 type Map struct {
 	tiles  []Tile
 	width  int
@@ -79,7 +86,6 @@ func (m *Map) At(p Coord) Tile {
 	if p.X < 0 || p.X >= m.width || p.Y < 0 || p.Y >= m.height {
 		return Invalid
 	}
-	// do bounds checks here
 	return m.tiles[p.Y*m.width+p.X]
 }
 
@@ -88,8 +94,15 @@ func (m *Map) Set(p Coord, t Tile) {
 		return
 	}
 
-	// do bounds checks here
 	m.tiles[p.Y*m.width+p.X] = t
+}
+
+func (m *Map) ValidTarget(t Coord) bool {
+	if t.X < 0 || t.X >= m.width || t.Y < 0 || t.Y >= m.height {
+		return false
+	}
+
+	return m.tiles[t.Y*m.width+t.X] == Grass
 }
 
 func rotatedBorder(angle float64) *ebiten.DrawImageOptions {
