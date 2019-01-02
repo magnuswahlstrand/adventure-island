@@ -115,14 +115,18 @@ func rotatedBorder(angle float64) *ebiten.DrawImageOptions {
 var (
 	world = Map{
 		tiles: []Tile{
-			Water, Water, Water, Water, Water, Water,
-			Water, Water, Grass, Grass, Water, Water,
-			Water, Grass, Grass, Water, Grass, Water,
-			Water, Grass, Grass, Grass, Grass, Water,
-			Water, Water, Grass, Grass, Water, Grass,
-			Water, Water, Water, Water, Water, Grass,
+			Water, Water, Water, Water, Water, Water, Water, Water, Water, Water,
+			Water, Grass, Grass, Grass, Water, Water, Grass, Grass, Water, Water,
+			Water, Grass, Grass, Grass, Grass, Water, Water, Grass, Grass, Water,
+			Water, Grass, Grass, Grass, Grass, Grass, Water, Grass, Grass, Water,
+			Water, Water, Water, Water, Grass, Grass, Water, Grass, Grass, Water,
+			Water, Water, Grass, Grass, Grass, Water, Water, Grass, Grass, Water,
+			Water, Grass, Grass, Grass, Water, Water, Grass, Grass, Grass, Water,
+			Water, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Water,
+			Water, Water, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Water,
+			Water, Water, Water, Water, Water, Water, Water, Water, Water, Water,
 		},
-		width:  6,
-		height: 6,
+		width:  10,
+		height: 10,
 	}
 )
