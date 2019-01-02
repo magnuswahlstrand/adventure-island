@@ -1,23 +1,20 @@
 package main
 
 import (
+	"bytes"
 	"image"
 	"log"
 	"time"
 
 	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/kyeett/adventure-island/resources"
 )
 
 var characterImage *ebiten.Image
 
 func init() {
-	f, err := ebitenutil.OpenFile("resources/character.png")
-	if err != nil {
-		log.Fatal(err)
-	}
+	img, _, err := image.Decode(bytes.NewReader(resources.Character_png))
 
-	img, _, err := image.Decode(f)
 	if err != nil {
 		log.Fatal(err)
 	}

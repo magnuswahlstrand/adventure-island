@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	_ "image/png"
 	"log"
+
+	"github.com/kyeett/adventure-island/resources"
 
 	"github.com/hajimehoshi/ebiten/inpututil"
 
@@ -29,12 +32,7 @@ var (
 )
 
 func init() {
-	f, err := ebitenutil.OpenFile("resources/all.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	img, _, err := image.Decode(f)
+	img, _, err := image.Decode(bytes.NewReader(resources.All_png))
 	if err != nil {
 		log.Fatal(err)
 	}
