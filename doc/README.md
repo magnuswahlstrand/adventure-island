@@ -33,13 +33,43 @@ Drawing a 2D map, simple player character controlled by WASD or keys, and collis
 
 ![Result day 1](day-1.gif)
 
+## Day 2
+
+### Part X - Static resources and hosting on [jsgo.io](jsgo.io)
+
+**Estimated (actual):** 0h (1min)
+
+- [x] Embed sprites `resources/resources.go`
+- [x] Host on [jsgo.io](jsgo.io)
+
+**Comments**: Spent about 2-3 hours to learn how to embedd resource images and audio for my [bongo-cat](https://kyeett.github.io/bongo-cat/) application, this in turn is used to deploy a GopherJS version of this game at [jsgo.io](jsgo.io). Used the same techniques for this game. I plan to save one version per day [here](https://kyeett.github.io/adventure-island/), for reference.
+
+#### Part 4 - Collect coins + score
+
+**Estimated (actual):** 3h ()
+
+- [ ] .
+- [ ] Touch controls for mobile browser
+
+**Comments**:
+
 ## Planned
 
-#### Part 4 - Collect coins + score **Estimated (actual):** 3h ()
+#### Part 5 - Sync game state over network
 
-#### Part 5 - Sync game state over network **Estimated (actual):** 8h ()
+<!-- **Estimated (actual):** 8h ()
+
+- [ ] .
+
+**Comments**:  -->
 
 #### Part 6 - Multiplayer **Estimated (actual):** 8h ()
+
+<!-- **Estimated (actual):** 8h ()
+
+- [ ] .
+
+**Comments**:  -->
 
 #### Part 7 - Animation between tiles - **Estimated (actual):** 4h ()
 
@@ -53,6 +83,13 @@ Drawing a 2D map, simple player character controlled by WASD or keys, and collis
 
 #### Part 12 - Compile and publish javascript **Estimated (actual):** 2h ()
 
+### Part 13 - Misc
+
+<!-- **Estimated (actual):** 8h ()
+- [ ] Touch relative to player
+
+**Comments**:  -->
+
 ### Estimated (actual): 55h (5h30+)
 
 ## Resources
@@ -62,6 +99,7 @@ Drawing a 2D map, simple player character controlled by WASD or keys, and collis
 - [faiface/pixel](https://github.com/faiface/pixel) - 2D game library in Go, used initially
 - [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) - Another 2D game library in Go. Can be compiled to javascript using WASM or GopherJS
 - [Marching squares](https://en.wikipedia.org/wiki/Marching_squares) - Algorithm for generating contours in 2D maps
+- [jsgo.io](jsgo.io) - Site for hosting and caching of GopherJS sites. Used to host this game, [Adventure Island](https://kyeett.github.io/adventure-island/)
 
 ## Lessons learnt
 
