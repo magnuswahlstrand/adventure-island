@@ -46,12 +46,13 @@ Drawing a 2D map, simple player character controlled by WASD or keys, and collis
 
 #### Part 4 - Collect coins + score
 
-**Estimated (actual):** 3h ()
+**Estimated (actual):** 3h (1h30)
 
-- [ ] .
-- [ ] Touch controls for mobile browser
+- [x] Coin objects on map
+- [x] Score from taking coins
+- [x] (bonus) Touch controls for mobile browser
 
-**Comments**:
+**Comments**: Pretty straightforward. Used a generic Object type to contain both Coins and Score, works surprisingly well.
 
 ## Planned
 

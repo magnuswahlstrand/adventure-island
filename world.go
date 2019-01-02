@@ -21,6 +21,17 @@ type Map struct {
 	height int
 }
 
+func calculateScore(objects []Object) int {
+	var score int
+	for _, o := range objects {
+		switch o.Type {
+		case Score:
+			score++
+		}
+	}
+	return score
+}
+
 func (m *Map) Draw(screen *ebiten.Image) {
 	// do bounds checks here
 	// m.tiles[p.Y*m.width+p.X] = t

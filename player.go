@@ -26,8 +26,7 @@ func subCharacter(step int, direction int) *ebiten.Image {
 	charHeight := 32
 	// sx := (int(t-Water) % tileXNum) * tileSize
 	// sy := (int(t-Water) / tileXNum) * tileSize
-	var sx int
-	sx = step * charWidth
+	sx := step * charWidth
 	sy := direction * charHeight
 	return characterImage.SubImage(image.Rect(sx, sy, sx+charWidth, sy+charHeight)).(*ebiten.Image)
 }

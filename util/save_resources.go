@@ -21,6 +21,10 @@ func main() {
 			path: "resources/character.png",
 			name: "Character_png",
 		},
+		resource{
+			path: "resources/objects.png",
+			name: "Objects_png",
+		},
 	}
 
 	f, err := os.Create("resources/resources.go")
