@@ -1,7 +1,11 @@
 package main
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"math"
+	"math/rand"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten"
 )
@@ -41,8 +45,8 @@ func (m *Map) GetScore() int {
 func (m *Map) CheckCollisions() {
 	// Check for collisions
 	for i, e := range m.entities {
-		if p.Coord == e.Coord {
-			m.entities[i] = e.Destory()
+		if p.entity != e && p.entity.Coord == e.Coord {
+			m.entities[i] = e.Destroy()
 			m.score = calculateScore(m.entities)
 		}
 	}
@@ -139,10 +143,24 @@ func rotatedBorder(angle float64) *ebiten.DrawImageOptions {
 	return op
 }
 
+func (m *Map) AddPlayer() string {
+
+	ID := NewID()
+	e := Entity{
+		ID,
+		Coord{2, 2},
+		Character,
+	}
+
+	m.entities = append(m.entities, e)
+
+	return ID
+}
+
 func NewMap() Map {
 	entities := []Entity{
-		Entity{Coord{2, 1}, Coin},
-		Entity{Coord{8, 2}, Coin},
+		Entity{NewID(), Coord{2, 1}, Coin},
+		Entity{NewID(), Coord{8, 2}, Coin},
 	}
 
 	return Map{
@@ -162,4 +180,11 @@ func NewMap() Map {
 		height:   10,
 		entities: entities,
 	}
+}
+
+func NewID() string {
+	hash := md5.New()
+	hash.Write([]byte(strconv.Itoa(rand.Intn(123456))))
+	ID := hex.EncodeToString(hash.Sum(nil))[0:12]
+	return ID
 }

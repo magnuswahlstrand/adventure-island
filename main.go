@@ -44,7 +44,7 @@ func init() {
 	tilesImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 }
 
-var p = Player{Coord{1, 2}, right}
+var p Player
 
 var (
 	Up    = Coord{0, -1}
@@ -107,31 +107,24 @@ func update(screen *ebiten.Image) error {
 
 	}
 
-	// Check for collisions
-	for i, e := range world.entities {
-		if p.Coord == e.Coord {
-			world.entities[i] = e.Destory()
-			score = calculateScore(world.entities)
-		}
-	}
+	world.CheckCollisions()
 
 	world.Draw(screen)
 	for _, o := range world.entities {
 		o.Draw(screen)
 	}
 
-	p.Draw(screen)
+	// p.Draw(screen)
 	// ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS()))
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d", score))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d", world.GetScore()))
 
 	return nil
 }
 
-var score int
-
 func main() {
 
 	world = NewMap()
+	p = world.AddPlayer()
 
 	if err := ebiten.Run(update, screenWidth, screenHeight, 2, "Tiles (Ebiten Demo)"); err != nil {
 		log.Fatal(err)

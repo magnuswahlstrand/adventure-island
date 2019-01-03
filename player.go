@@ -4,13 +4,19 @@ import (
 	"bytes"
 	"image"
 	"log"
-	"time"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/kyeett/adventure-island/resources"
 )
 
 var characterImage *ebiten.Image
+
+type Player string
+
+// type Player struct {
+// 	entity    Entity
+// 	direction int
+// }
 
 func init() {
 	img, _, err := image.Decode(bytes.NewReader(resources.Character_png))
@@ -38,27 +44,14 @@ const (
 	left
 )
 
-type Player struct {
-	Coord
-	direction int
-}
-
-func (p *Player) Draw(screen *ebiten.Image) {
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(p.X)*tileSize, float64(p.Y-1)*tileSize)
-	t := time.Now().Nanosecond() / 1000 / 1000 / 250 // 10th of 2nd
-	screen.DrawImage(subCharacter(t%4, p.direction-down), op)
-}
-
 func (p *Player) Move(c Coord) {
-	p.X += c.X
-	p.Y += c.Y
+	p.entity.X += c.X
+	p.entity.Y += c.Y
 }
 
 func (p *Player) MoveTo(c Coord) {
-	p.X = c.X
-	p.Y = c.Y
+	p.entity.X = c.X
+	p.entity.Y = c.Y
 }
 
 func (p *Player) MoveUp() {
@@ -90,5 +83,5 @@ func (p *Player) PrepareMove(c Coord) Coord {
 		p.direction = right
 
 	}
-	return p.Coord.Add(c)
+	return p.entity.Coord.Add(c)
 }

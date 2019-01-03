@@ -26,6 +26,7 @@ func init() {
 type EntityType int
 
 type Entity struct {
+	ID string
 	Coord
 	Type EntityType
 }
@@ -33,6 +34,7 @@ type Entity struct {
 const (
 	Coin EntityType = iota + 1
 	Score
+	Character
 	Empty
 )
 
@@ -49,20 +51,28 @@ func subObject(typ EntityType, frame int) *ebiten.Image {
 	return objectImage.SubImage(image.Rect(sx, sy, sx+width, sy+height)).(*ebiten.Image)
 }
 
-func (o Entity) Draw(screen *ebiten.Image) {
+func (e Entity) Draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+
 	switch o.Type {
 	case Score:
 		return
+	case Character:
+
+		op.GeoM.Translate(float64(o.X)*tileSize, float64(o.Y-1)*tileSize)
+		t := time.Now().Nanosecond() / 1000 / 1000 / 250 // 10th of 2nd
+		screen.DrawImage(subCharacter(t%4, p.direction-down), op)
+
+	case Coin:
+		op.GeoM.Translate(float64(o.X)*tileSize, float64(o.Y)*tileSize)
+
+		t := time.Now().Nanosecond() / 1000 / 1000 / 100 // 10th of 2nd
+		screen.DrawImage(subObject(o.Type, t), op)
 	}
 
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(o.X)*tileSize, float64(o.Y)*tileSize)
-	t := time.Now().Nanosecond() / 1000 / 1000 / 100 // 10th of 2nd
-
-	screen.DrawImage(subObject(o.Type, t), op)
 }
 
-func (o Entity) Destory() Entity {
+func (e Entity) Destory() Entity {
 	switch o.Type {
 	case Coin:
 		return Entity{
