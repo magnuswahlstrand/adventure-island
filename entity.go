@@ -23,20 +23,20 @@ func init() {
 	objectImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 }
 
-type ObjectType int
+type EntityType int
 
-type Object struct {
+type Entity struct {
 	Coord
-	Type ObjectType
+	Type EntityType
 }
 
 const (
-	Coin ObjectType = iota + 1
+	Coin EntityType = iota + 1
 	Score
 	Empty
 )
 
-func subObject(typ ObjectType, frame int) *ebiten.Image {
+func subObject(typ EntityType, frame int) *ebiten.Image {
 	var width, height, offsetX, offsetY, sx, sy int
 	switch typ {
 	case Coin:
@@ -49,7 +49,7 @@ func subObject(typ ObjectType, frame int) *ebiten.Image {
 	return objectImage.SubImage(image.Rect(sx, sy, sx+width, sy+height)).(*ebiten.Image)
 }
 
-func (o Object) Draw(screen *ebiten.Image) {
+func (o Entity) Draw(screen *ebiten.Image) {
 	switch o.Type {
 	case Score:
 		return
@@ -62,16 +62,16 @@ func (o Object) Draw(screen *ebiten.Image) {
 	screen.DrawImage(subObject(o.Type, t), op)
 }
 
-func (o Object) Destory() Object {
+func (o Entity) Destory() Entity {
 	switch o.Type {
 	case Coin:
-		return Object{
+		return Entity{
 			Coord: Coord{-1, -1},
 			Type:  Score,
 		}
 	}
 
-	return Object{
+	return Entity{
 		Coord: Coord{-1, -1},
 		Type:  Empty,
 	}

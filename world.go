@@ -16,20 +16,36 @@ func (c Coord) Add(d Coord) Coord {
 }
 
 type Map struct {
-	tiles  []Tile
-	width  int
-	height int
+	tiles    []Tile
+	width    int
+	height   int
+	entities []Entity
+	score    int
 }
 
-func calculateScore(objects []Object) int {
+func calculateScore(entities []Entity) int {
 	var score int
-	for _, o := range objects {
+	for _, o := range entities {
 		switch o.Type {
 		case Score:
 			score++
 		}
 	}
 	return score
+}
+
+func (m *Map) GetScore() int {
+	return m.score
+}
+
+func (m *Map) CheckCollisions() {
+	// Check for collisions
+	for i, e := range m.entities {
+		if p.Coord == e.Coord {
+			m.entities[i] = e.Destory()
+			m.score = calculateScore(m.entities)
+		}
+	}
 }
 
 func (m *Map) Draw(screen *ebiten.Image) {
@@ -123,8 +139,13 @@ func rotatedBorder(angle float64) *ebiten.DrawImageOptions {
 	return op
 }
 
-var (
-	world = Map{
+func NewMap() Map {
+	entities := []Entity{
+		Entity{Coord{2, 1}, Coin},
+		Entity{Coord{8, 2}, Coin},
+	}
+
+	return Map{
 		tiles: []Tile{
 			Water, Water, Water, Water, Water, Water, Water, Water, Water, Water,
 			Water, Grass, Grass, Grass, Water, Water, Grass, Grass, Water, Water,
@@ -137,7 +158,8 @@ var (
 			Water, Water, Grass, Grass, Grass, Grass, Grass, Grass, Grass, Water,
 			Water, Water, Water, Water, Water, Water, Water, Water, Water, Water,
 		},
-		width:  10,
-		height: 10,
+		width:    10,
+		height:   10,
+		entities: entities,
 	}
-)
+}

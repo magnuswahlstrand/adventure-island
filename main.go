@@ -30,6 +30,8 @@ const (
 
 const xNum = screenWidth / tileSize
 
+var world Map
+
 var (
 	tilesImage *ebiten.Image
 )
@@ -85,7 +87,7 @@ func update(screen *ebiten.Image) error {
 		return errors.New("Game terminated by player")
 	}
 
-	// randomWalk()
+	randomWalk()
 
 	if leftPressed() || rightPressed() || upPressed() || downPressed() {
 		switch {
@@ -106,15 +108,15 @@ func update(screen *ebiten.Image) error {
 	}
 
 	// Check for collisions
-	for i, o := range gameObjects {
-		if p.Coord == o.Coord {
-			gameObjects[i] = o.Destory()
-			score = calculateScore(gameObjects)
+	for i, e := range world.entities {
+		if p.Coord == e.Coord {
+			world.entities[i] = e.Destory()
+			score = calculateScore(world.entities)
 		}
 	}
 
 	world.Draw(screen)
-	for _, o := range gameObjects {
+	for _, o := range world.entities {
 		o.Draw(screen)
 	}
 
@@ -126,14 +128,10 @@ func update(screen *ebiten.Image) error {
 }
 
 var score int
-var gameObjects []Object
 
 func main() {
 
-	gameObjects = []Object{
-		Object{Coord{2, 1}, Coin},
-		Object{Coord{8, 2}, Coin},
-	}
+	world = NewMap()
 
 	if err := ebiten.Run(update, screenWidth, screenHeight, 2, "Tiles (Ebiten Demo)"); err != nil {
 		log.Fatal(err)

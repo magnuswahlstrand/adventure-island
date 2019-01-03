@@ -88,6 +88,7 @@ Drawing a 2D map, simple player character controlled by WASD or keys, and collis
 
 <!-- **Estimated (actual):** 8h ()
 - [ ] Touch relative to player
+- [ ] Different colors for multiplayer
 
 **Comments**:  -->
 
