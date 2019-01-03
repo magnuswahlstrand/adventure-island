@@ -19,6 +19,11 @@ func (c Coord) Add(d Coord) Coord {
 	}
 }
 
+type Position struct {
+	Coord
+	theta int
+}
+
 type Map struct {
 	tiles    []Tile
 	width    int
@@ -45,7 +50,7 @@ func (m *Map) GetScore() int {
 func (m *Map) CheckCollisions() {
 	// Check for collisions
 	for i, e := range m.entities {
-		if p.entity != e && p.entity.Coord == e.Coord {
+		if p != e && p.Coord == e.Coord {
 			m.entities[i] = e.Destroy()
 			m.score = calculateScore(m.entities)
 		}
@@ -128,7 +133,7 @@ func (m *Map) Set(p Coord, t Tile) {
 	m.tiles[p.Y*m.width+p.X] = t
 }
 
-func (m *Map) ValidTarget(t Coord) bool {
+func (m *Map) ValidTarget(t Position) bool {
 	if t.X < 0 || t.X >= m.width || t.Y < 0 || t.Y >= m.height {
 		return false
 	}
@@ -143,24 +148,24 @@ func rotatedBorder(angle float64) *ebiten.DrawImageOptions {
 	return op
 }
 
-func (m *Map) AddPlayer() string {
+func (m *Map) AddPlayer() Entity {
 
 	ID := NewID()
 	e := Entity{
 		ID,
-		Coord{2, 2},
 		Character,
+		Position{Coord{2, 2}, 0},
 	}
 
 	m.entities = append(m.entities, e)
 
-	return ID
+	return e
 }
 
 func NewMap() Map {
 	entities := []Entity{
-		Entity{NewID(), Coord{2, 1}, Coin},
-		Entity{NewID(), Coord{8, 2}, Coin},
+		Entity{NewID(), Coin, Position{Coord{2, 1}, 0}},
+		Entity{NewID(), Coin, Position{Coord{8, 2}, 0}},
 	}
 
 	return Map{
@@ -180,6 +185,20 @@ func NewMap() Map {
 		height:   10,
 		entities: entities,
 	}
+}
+
+func (m *Map) MoveTo(a Entity, c Position) Entity {
+	if m.ValidTarget(c) == false {
+		return a
+	}
+
+	for i, e := range m.entities {
+		if e == a {
+			m.entities[i].Position = c
+			return m.entities[i]
+		}
+	}
+	return a
 }
 
 func NewID() string {

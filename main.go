@@ -44,7 +44,7 @@ func init() {
 	tilesImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 }
 
-var p Player
+var p Entity
 
 var (
 	Up    = Coord{0, -1}
@@ -53,27 +53,33 @@ var (
 	Right = Coord{1, 0}
 )
 
+// Up    = Position{Coord{0, -1}, 0}
+// Left  = Position{Coord{-1, 0}, 1}
+// Down  = Position{Coord{0, 1}, 2}
+// Right = Position{Coord{1, 0}, 3}
+
 func randomWalk() {
 
-	var c Coord
+	var c Position
 
 	if time.Now().Nanosecond()%10 == 0 {
+
 		switch rand.Intn(4) {
 		case 0:
-			c = p.PrepareMove(Up)
+			c.Coord = p.Position.Add(Up)
+			c.theta = 0
 		case 1:
-			c = p.PrepareMove(Left)
+			c.Coord = p.Position.Add(Left)
+			c.theta = 3
 		case 2:
-			c = p.PrepareMove(Down)
+			c.Coord = p.Position.Add(Down)
+			c.theta = 2
 		case 3:
-			c = p.PrepareMove(Right)
+			c.Coord = p.Position.Add(Right)
+			c.theta = 1
 		}
-
-		if world.ValidTarget(c) == true {
-			p.MoveTo(c)
-		}
+		p = world.MoveTo(p, c)
 	}
-
 }
 
 func update(screen *ebiten.Image) error {
@@ -81,30 +87,33 @@ func update(screen *ebiten.Image) error {
 		return nil
 	}
 
-	var c Coord
-
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		return errors.New("Game terminated by player")
 	}
 
 	randomWalk()
 
+	var c Position
 	if leftPressed() || rightPressed() || upPressed() || downPressed() {
 		switch {
 		case upPressed():
-			c = p.PrepareMove(Up)
+			c.Coord = p.Position.Add(Up)
+			c.theta = 0
 		case leftPressed():
-			c = p.PrepareMove(Left)
+			c.Coord = p.Position.Add(Left)
+			c.theta = 3
 		case downPressed():
-			c = p.PrepareMove(Down)
+			c.Coord = p.Position.Add(Down)
+			c.theta = 2
 		case rightPressed():
-			c = p.PrepareMove(Right)
+			c.Coord = p.Position.Add(Right)
+			c.theta = 1
 		}
 
-		if world.ValidTarget(c) == true {
-			p.MoveTo(c)
-		}
-
+		// if world.ValidTarget(c) == true {
+		// 	p.MoveTo(c)
+		// }
+		p = world.MoveTo(p, c)
 	}
 
 	world.CheckCollisions()

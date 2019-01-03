@@ -14,8 +14,17 @@ var a = 1
 
 var objectImage *ebiten.Image
 
+var characterImage *ebiten.Image
+
 func init() {
-	img, _, err := image.Decode(bytes.NewReader(resources.Objects_png))
+	img, _, err := image.Decode(bytes.NewReader(resources.Character_png))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	characterImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
+
+	img, _, err = image.Decode(bytes.NewReader(resources.Objects_png))
 
 	if err != nil {
 		log.Fatal(err)
@@ -26,9 +35,9 @@ func init() {
 type EntityType int
 
 type Entity struct {
-	ID string
-	Coord
+	ID   string
 	Type EntityType
+	Position
 }
 
 const (
@@ -52,37 +61,67 @@ func subObject(typ EntityType, frame int) *ebiten.Image {
 }
 
 func (e Entity) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
 
-	switch o.Type {
+	switch e.Type {
 	case Score:
 		return
-	case Character:
-
-		op.GeoM.Translate(float64(o.X)*tileSize, float64(o.Y-1)*tileSize)
-		t := time.Now().Nanosecond() / 1000 / 1000 / 250 // 10th of 2nd
-		screen.DrawImage(subCharacter(t%4, p.direction-down), op)
-
-	case Coin:
-		op.GeoM.Translate(float64(o.X)*tileSize, float64(o.Y)*tileSize)
-
-		t := time.Now().Nanosecond() / 1000 / 1000 / 100 // 10th of 2nd
-		screen.DrawImage(subObject(o.Type, t), op)
 	}
+	// case Character:
 
+	// 	op.GeoM.Translate(float64(e.X)*tileSize, float64(e.Y-1)*tileSize)
+	// 	t := time.Now().Nanosecond() / 1000 / 1000 / 250 // 10th of 2nd
+	// 	screen.DrawImage(subCharacter(t%4, p.direction-down), op)
+
+	// case Coin:
+
+	// 	t := time.Now().Nanosecond() / 1000 / 1000 / 100 // 10th of 2nd
+	// }
+	op := &ebiten.DrawImageOptions{}
+	img := e.Sprite()
+	_, h := img.Size()
+	op.GeoM.Translate(float64(e.Position.X)*tileSize, float64(e.Y-(h/tileSize-1))*tileSize)
+	screen.DrawImage(img, op)
 }
 
-func (e Entity) Destory() Entity {
-	switch o.Type {
+func (e Entity) Destroy() Entity {
+	switch e.Type {
 	case Coin:
 		return Entity{
-			Coord: Coord{-1, -1},
-			Type:  Score,
+			Position: Position{Coord{-1, -1}, 0},
+			Type:     Score,
 		}
 	}
 
 	return Entity{
-		Coord: Coord{-1, -1},
-		Type:  Empty,
+		Position: Position{Coord{-1, -1}, 0},
+		Type:     Empty,
 	}
+}
+
+func (e Entity) Sprite() *ebiten.Image {
+	t := time.Now().Nanosecond() / 1000 / 1000 / 250
+
+	var img *ebiten.Image
+	switch e.Type {
+	case Character:
+		charWidth := 16
+		charHeight := 32
+		sx := t % 4 * charWidth
+
+		var direction int
+		switch e.theta {
+		case 0:
+			direction = 2
+		case 2:
+			direction = 0
+		default:
+			direction = e.theta
+
+		}
+		sy := direction * charHeight
+		img = characterImage.SubImage(image.Rect(sx, sy, sx+charWidth, sy+charHeight)).(*ebiten.Image)
+	case Coin:
+		img = subObject(e.Type, t%4)
+	}
+	return img
 }
