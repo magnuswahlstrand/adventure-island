@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+// Web exposes a backend server over gRPC.
+package game;
+
+option go_package = "github.com/kyeett/adventure-island/proto/server";
+
+
+// Define the package locations the generated files will go into
+message Empty {}
+
+message NewPlayerResponse {
+    Entity ID = 1;
+}
+
+message NewPlayerRequest {}
+
+service Backend {
+    rpc NewPlayer(NewPlayerRequest) returns (NewPlayerResponse) {}
+    rpc GetState(Empty) returns (World) {}
+}
+
+
+enum EntityType {
+    UNKNOWN = 0;
+	COIN = 1;
+	SCORE = 2;
+	CHARACTER = 3;
+	EMPTY = 4;
+}
+
+
+message Entity {
+    string ID = 1;
+    EntityType Type = 2;
+    google.protobuf.Struct Test = 3;
+    
+}
+
+Struct Ent {
+}
+  
+message World {
+    repeated Entity entities = 1;
+}
