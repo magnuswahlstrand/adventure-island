@@ -84,11 +84,12 @@ func subCharacter(dir, frame int) *ebiten.Image {
 		direction = dir
 
 	}
+
 	sy := direction * charHeight
 	return characterImage.SubImage(image.Rect(sx, sy, sx+charWidth, sy+charHeight)).(*ebiten.Image)
 }
 
-func Sprite(e entity.Entity) *ebiten.Image {
+func Sprite(e *entity.Entity) *ebiten.Image {
 	t := time.Now().Nanosecond() / 1000 / 1000 / 250
 
 	var img *ebiten.Image
@@ -97,6 +98,8 @@ func Sprite(e entity.Entity) *ebiten.Image {
 		img = subCharacter(e.Position.Theta, t%4)
 	case entity.Coin:
 		img = subObject(e.Type, t%4)
+	default:
+		log.Fatalf("Entity type %s is not valid", e)
 	}
 	return img
 }
