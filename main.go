@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	_ "image/png"
 	"log"
@@ -14,6 +15,7 @@ import (
 	"github.com/hajimehoshi/ebiten/inpututil"
 
 	"github.com/kyeett/gameserver/entity"
+	"github.com/kyeett/gameserver/grpc"
 	"github.com/kyeett/gameserver/localserver"
 	"github.com/kyeett/gameserver/types"
 
@@ -75,8 +77,6 @@ func randomWalk() {
 			c.Theta = 1
 		}
 		p2, _ = s.PerformAction(p2, c)
-		p2Score := calculateScore(p2.ID, s.Entities())
-		fmt.Println(p2Score)
 	}
 }
 
@@ -89,7 +89,9 @@ func update(screen *ebiten.Image) error {
 		return errors.New("Game terminated by player")
 	}
 
-	randomWalk()
+	if dummyPlayer {
+		randomWalk()
+	}
 
 	var c types.Position
 	if leftPressed() || rightPressed() || upPressed() || downPressed() {
@@ -123,17 +125,46 @@ func update(screen *ebiten.Image) error {
 	return nil
 }
 
-var s gameserver.GameServer
+var (
+	s     gameserver.GameServer
+	world types.World
 
-var world types.World
+	dummyPlayer bool
+)
 
 func main() {
 
-	s = localserver.New()
-	p, _ = s.NewPlayer()
-	p2, _ = s.NewPlayer()
-	world = s.World()
+	var remoteState bool
 
+	flag.BoolVar(&dummyPlayer, "dummy", false, "create a dummy player who walks around randomly, mostly for development purposes")
+	flag.BoolVar(&remoteState, "remote", false, "run to remote server")
+	flag.Parse()
+
+	switch remoteState {
+	case true:
+		var err error
+
+		ss, err := grpc.NewServer()
+		go ss.Run() //Dummy
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		s, err = grpc.NewClient()
+		if err != nil {
+			log.Fatal(err)
+		}
+	default:
+		s = localserver.New()
+	}
+
+	p, _ = s.NewPlayer()
+	if dummyPlayer {
+		p2, _ = s.NewPlayer()
+	}
+
+	world = s.World()
 	if err := ebiten.Run(update, screenWidth, screenHeight, 2, "Tiles (Ebiten Demo)"); err != nil {
 		log.Fatal(err)
 	}
