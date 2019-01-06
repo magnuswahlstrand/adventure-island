@@ -10,13 +10,11 @@ import (
 	"time"
 
 	"github.com/kyeett/adventure-island/render"
-	"github.com/kyeett/gameserver"
 
 	"github.com/hajimehoshi/ebiten/inpututil"
 
 	"github.com/kyeett/gameserver/entity"
-	"github.com/kyeett/gameserver/grpc"
-	"github.com/kyeett/gameserver/localserver"
+	"github.com/kyeett/gameserver/game"
 	"github.com/kyeett/gameserver/types"
 
 	"github.com/hajimehoshi/ebiten"
@@ -76,7 +74,7 @@ func randomWalk() {
 			c.Coord = p2.Position.Add(Right)
 			c.Theta = 1
 		}
-		p2, _ = s.PerformAction(p2, c)
+		p2, _ = g.PerformAction(p2, c)
 	}
 }
 
@@ -111,12 +109,13 @@ func update(screen *ebiten.Image) error {
 
 		}
 
-		p, _ = s.PerformAction(p, c)
-		score = calculateScore(p.ID, s.Entities())
+		p, _ = g.PerformAction(p, c)
+		score = calculateScore(p.ID, g.Entities())
 	}
 
 	render.DrawWorld(world, screen)
-	for _, e := range s.Entities() {
+
+	for _, e := range g.Entities() {
 		render.Draw(&e, screen)
 	}
 
@@ -126,7 +125,7 @@ func update(screen *ebiten.Image) error {
 }
 
 var (
-	s     gameserver.GameServer
+	g     *game.Game
 	world types.World
 
 	dummyPlayer bool
@@ -134,37 +133,41 @@ var (
 
 func main() {
 
-	var remoteState bool
+	var addr, worldName string
+	var dev bool
 
 	flag.BoolVar(&dummyPlayer, "dummy", false, "create a dummy player who walks around randomly, mostly for development purposes")
-	flag.BoolVar(&remoteState, "remote", false, "run to remote server")
+	flag.BoolVar(&dev, "dev", false, "start the development server on local machine")
+	flag.StringVar(&addr, "addr", "", "address to remote server: default: run local mode")
+	flag.StringVar(&worldName, "world", "", "name of the world to play on")
 	flag.Parse()
 
-	switch remoteState {
-	case true:
-		var err error
+	opts := []game.Option{}
 
-		ss, err := grpc.NewServer()
-		go ss.Run() //Dummy
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		s, err = grpc.NewClient()
-		if err != nil {
-			log.Fatal(err)
-		}
-	default:
-		s = localserver.New()
+	if worldName != "" {
+		opts = append(opts, game.World(worldName))
 	}
 
-	p, _ = s.NewPlayer()
+	if dev {
+		opts = append(opts, game.DevServer)
+	}
+
+	if addr == "" {
+		opts = append(opts, game.RemoteState(addr))
+	}
+
+	var err error
+	g, err = game.New(opts...)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	p, _ = g.NewPlayer()
 	if dummyPlayer {
-		p2, _ = s.NewPlayer()
+		p2, _ = g.NewPlayer()
 	}
 
-	world = s.World()
+	world = g.World()
 	if err := ebiten.Run(update, screenWidth, screenHeight, 2, "Tiles (Ebiten Demo)"); err != nil {
 		log.Fatal(err)
 	}
