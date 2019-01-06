@@ -77,6 +77,7 @@ func randomWalk() {
 		}
 		p2, _ = g.PerformAction(p2, c)
 	}
+
 }
 
 func update(screen *ebiten.Image) error {
@@ -167,9 +168,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	p, _ = g.NewPlayer()
+	p, err = g.NewPlayer()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if dummyPlayer {
-		p2, _ = g.NewPlayer()
+		p2, err = g.NewPlayer()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	world = g.World()
