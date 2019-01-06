@@ -5,9 +5,10 @@ import (
 	"flag"
 	"fmt"
 	_ "image/png"
-	"log"
 	"math/rand"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/kyeett/adventure-island/render"
 
@@ -109,10 +110,14 @@ func update(screen *ebiten.Image) error {
 
 		}
 
-		p, _ = g.PerformAction(p, c)
+		e, err := g.PerformAction(p, c)
+		if err != nil {
+			log.Error("invalid move %s", p)
+		} else {
+			p = e
+		}
 		score = calculateScore(p.ID, g.Entities())
 	}
-
 	render.DrawWorld(world, screen)
 
 	for _, e := range g.Entities() {
@@ -152,7 +157,7 @@ func main() {
 		opts = append(opts, game.DevServer)
 	}
 
-	if addr == "" {
+	if addr != "" {
 		opts = append(opts, game.RemoteState(addr))
 	}
 
