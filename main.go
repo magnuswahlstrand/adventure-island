@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	_ "image/png"
 	"math/rand"
@@ -10,6 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/kyeett/adventure-island/conf"
 	"github.com/kyeett/adventure-island/render"
 
 	"github.com/hajimehoshi/ebiten/inpututil"
@@ -113,7 +113,7 @@ func update(screen *ebiten.Image) error {
 
 		e, err := g.PerformAction(p, c)
 		if err != nil {
-			log.Error("invalid move %s", p)
+			log.Errorf("invalid move %s", p)
 		} else {
 			p = e
 		}
@@ -139,18 +139,10 @@ var (
 
 func main() {
 
-	var addr, worldName string
-	var dev, secure bool
-
-	flag.BoolVar(&dummyPlayer, "dummy", false, "create a dummy player who walks around randomly, mostly for development purposes")
-	flag.BoolVar(&dev, "dev", false, "start the development server on local machine")
-	flag.BoolVar(&dev, "secure", false, "enable TLS")
-	flag.StringVar(&addr, "addr", "", "address to remote server: default: run local mode")
-	flag.StringVar(&worldName, "world", "", "name of the world to play on")
-	flag.Parse()
+	addr, worldName, dev, secure, dummy := conf.Conf()
+	dummyPlayer = dummy
 
 	opts := []game.Option{}
-
 	if worldName != "" {
 		opts = append(opts, game.World(worldName))
 	}
