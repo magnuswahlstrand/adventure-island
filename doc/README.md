@@ -54,35 +54,61 @@ Drawing a 2D map, simple player character controlled by WASD or keys, and collis
 
 **Comments**: Pretty straightforward. Used a generic Object type to contain both Coins and Score, works surprisingly well.
 
-## Planned
+## Day 3-6
 
 #### Part 5 - Sync game state over network
 
-<!-- **Estimated (actual):** 8h ()
+**Estimated (actual):** 8h (20h+)
 
-- [ ] .
+- [x] Implement [game server](https://github.com/kyeett/gameserver)
+- [x] Abstract the transport layer away from the game
+- [x] (added) Configuration for game
 
-**Comments**:  -->
+**Comments**: Ok, this took a long time. Estimated at 8h, it probably took over 20h. Spent a lot of the time on making gRPC work with gopherJS, and then refactoring back and forth.
 
-#### Part 6 - Multiplayer **Estimated (actual):** 8h ()
+#### Part 6 - Multiplayer
 
-<!-- **Estimated (actual):** 8h ()
+**Estimated (actual):** 8h (2h)
 
-- [ ] .
+- [x] Build Linux binary
+- [x] Host server on google cloiud
+- [x] Get someone to play :-)
 
-**Comments**:  -->
+### Progress - Day 5
 
-#### Part 7 - Animation between tiles - **Estimated (actual):** 4h ()
+Very simple game play, but now supports a remote server for state and multiplayer!
 
-#### Part 8 - Add trees - **Estimated (actual):** 1h ()
+![Result day 1](day-5.gif)
 
-#### Part 9 - Character animation **Estimated (actual):** 6h ()
+## Day 6
 
-#### Part 10 - Several Z-levels **Estimated (actual):** 6h ()
+#### Part 7 - Compile and publish javascript **Estimated (actual):** 2h ()
 
-#### Part 11 - Game chat **Estimated (actual):** 3h ()
+**Comments**:
 
-#### Part 12 - Compile and publish javascript **Estimated (actual):** 2h ()
+## Planned
+
+#### Part 8 - Add a configuration screen
+
+**Estimated (actual):** 8h ()
+
+- [ ] Add a start screen
+- [ ] Game scenes
+- [ ] Navigate between start screen and game screen
+
+#### Part 9 - Configuration pt2
+
+#### Part 10 - Add trees - **Estimated (actual):** 1h ()
+
+#### Part 10 - Add trees - **Estimated (actual):** 1h ()
+
+#### Part 11 - Character animation **Estimated (actual):** 6h ()
+
+#### Part 12 - Several Z-levels **Estimated (actual):** 6h ()
+
+#### Part 13 - Game chat **Estimated (actual):** 3h ()
+
+#### Part - Animation between tiles - **Estimated (actual):** 4h ()
 
 ### Part 13 - Misc
 
@@ -102,6 +128,7 @@ Drawing a 2D map, simple player character controlled by WASD or keys, and collis
 - [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) - Another 2D game library in Go. Can be compiled to javascript using WASM or GopherJS
 - [Marching squares](https://en.wikipedia.org/wiki/Marching_squares) - Algorithm for generating contours in 2D maps
 - [jsgo.io](jsgo.io) - Site for hosting and caching of GopherJS sites. Used to host this game, [Adventure Island](https://kyeett.github.io/adventure-island/)
+- [RGB values](http://www.wc3c.net/showthread.php?t=101858&page=4) for player colors in Warcraft 3
 
 ## Lessons learnt
 

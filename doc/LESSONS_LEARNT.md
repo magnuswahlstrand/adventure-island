@@ -70,3 +70,40 @@ httpd = BaseHTTPServer.HTTPServer(('localhost', 4443), SimpleHTTPServer.SimpleHT
 httpd.socket = ssl.wrap_socket (httpd.socket, certfile='./server.pem', server_side=True)
 httpd.serve_forever()
 ```
+
+# TLS Certificates for localhost
+
+Peter Hellberg introduced me to this [blog post](https://blog.filippo.io/mkcert-valid-https-certificates-for-localhost/) on using `mkcert`to generate certificates for developing of HTTPS on localhost. This paragraph summarizes the problem:
+
+> The web is moving to HTTPS, preventing network attackers from observing or injecting page contents. But HTTPS needs TLS certificates, and while deployment is increasingly a solved issue thanks to the ACME protocol and Let's Encrypt, development still mostly ends up happening over HTTP because no one can get an universally valid certificate for localhost.
+
+The tool [mkcert](https://github.com/FiloSottile/mkcert) generates a certificate that can be used like this
+
+```golang
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func main() {
+	hs := &http.Server{
+		Addr:    ":4443",
+		Handler: http.HandlerFunc(hello),
+	}
+
+	hs.ListenAndServeTLS("localhost+1.pem", "localhost+1-key.pem")
+}
+
+func hello(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello TLS world!")
+}
+```
+
+## Allow insecure on localhost
+
+There is a flag to allow HTTPS even though invalid certificate is presented.
+`chrome://flags/#allow-insecure-localhost`
+
+> Allows requests to localhost over HTTPS even when an invalid certificate is presented. – Mac, Windows, Linux, Chrome OS, Android
