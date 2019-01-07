@@ -155,7 +155,7 @@ func main() {
 	}
 
 	if dev {
-		opts = append(opts, game.DevServer)
+		opts = append(opts, game.DevServer("localhost:10001"))
 	}
 
 	if addr != "" {
