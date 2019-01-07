@@ -140,10 +140,11 @@ var (
 func main() {
 
 	var addr, worldName string
-	var dev bool
+	var dev, secure bool
 
 	flag.BoolVar(&dummyPlayer, "dummy", false, "create a dummy player who walks around randomly, mostly for development purposes")
 	flag.BoolVar(&dev, "dev", false, "start the development server on local machine")
+	flag.BoolVar(&dev, "secure", false, "enable TLS")
 	flag.StringVar(&addr, "addr", "", "address to remote server: default: run local mode")
 	flag.StringVar(&worldName, "world", "", "name of the world to play on")
 	flag.Parse()
@@ -155,11 +156,11 @@ func main() {
 	}
 
 	if dev {
-		opts = append(opts, game.DevServer("localhost:10001"))
+		opts = append(opts, game.DevServer("localhost:10001", secure))
 	}
 
 	if addr != "" {
-		opts = append(opts, game.RemoteState(addr))
+		opts = append(opts, game.RemoteState(addr, secure))
 	}
 
 	var err error
