@@ -57,7 +57,7 @@ func randomWalk() {
 	var c types.Position
 
 	for i, d := range dummies {
-		if (time.Now().Nanosecond()+1000*i)%20000 == 0 {
+		if (time.Now().Nanosecond()/1000000+i)%10 == 0 {
 
 			switch rand.Intn(4) {
 			case 0:
