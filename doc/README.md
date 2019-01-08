@@ -104,10 +104,14 @@ Very simple game play, but now supports a remote server for state and multiplaye
 
 Finally managed to get a working networked version that works in the browser! Many different steps to make it happend, including `autocert`. Got a lot of help from @jbrandhorst
 
-Also spent a few hours to generate a spritesheet with "all" combinations of hair colors and cloth colors, with quite good result
+Also spent a few hours to generate a spritesheet with "all" combinations of hair colors and cloth colors, with quite nice result. A player can change their colors using **J** and **H** buttons.
 
 ![Result day 7](day-7.gif)
 ![Result day 8](day-8.gif)
+
+Added a new mode that generates new worlds from perlin noise and my [mapgenerator lib](https://github.com/kyeett/mapgenerator/blob/master/gen/gen.go).
+
+![Result day ](day-8.1.png)
 
 ## Planned
 
@@ -118,6 +122,7 @@ Also spent a few hours to generate a spritesheet with "all" combinations of hair
 - [ ] Add a start screen
 - [ ] Game scenes
 - [ ] Navigate between start screen and game screen
+- [ ] Select map when starting
 
 #### Part 9 - Configuration pt2
 
