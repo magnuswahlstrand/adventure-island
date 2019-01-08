@@ -92,11 +92,22 @@ Very simple game play, but now supports a remote server for state and multiplaye
 
 **Comments**: Quite some work, but got it work eventually.
 
+#### Part X - (Added) Player colors
+
+**Estimated (actual):** 0h (3h)
+
+- [x] Create sprite sheet with color combinations for body and hair
+- [x] Select sprite based on player ID
+- [x] Allow user to change color of their character
+
 ### Progress - Day 7
 
-Finally managed to get a working networked version that works in the browser.
+Finally managed to get a working networked version that works in the browser! Many different steps to make it happend, including `autocert`. Got a lot of help from @jbrandhorst
+
+Also spent a few hours to generate a spritesheet with "all" combinations of hair colors and cloth colors, with quite good result
 
 ![Result day 7](day-7.gif)
+![Result day 8](day-8.gif)
 
 ## Planned
 
