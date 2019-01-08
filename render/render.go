@@ -11,7 +11,7 @@ import (
 
 const tileSize = 16
 
-func Draw(e *entity.Entity, screen *ebiten.Image) {
+func Draw(e entity.Entity, screen *ebiten.Image) {
 	switch e.Type {
 	case entity.Score:
 		return

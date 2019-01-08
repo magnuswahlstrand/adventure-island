@@ -78,13 +78,25 @@ Drawing a 2D map, simple player character controlled by WASD or keys, and collis
 
 Very simple game play, but now supports a remote server for state and multiplayer!
 
-![Result day 1](day-5.gif)
+![Result day 5](day-5.gif)
 
-## Day 6
+## Day 7 - 8
 
-#### Part 7 - Compile and publish javascript **Estimated (actual):** 2h ()
+#### Part 7 - Compile and publish javascript
 
-**Comments**:
+**Estimated (actual):** 2h (6h)
+
+- [x] Compile networked version using gopherJS
+- [x] (added) Publish on a public address
+- [x] (added) Use autocert for TLS
+
+**Comments**: Quite some work, but got it work eventually.
+
+### Progress - Day 7
+
+Finally managed to get a working networked version that works in the browser.
+
+![Result day 7](day-7.gif)
 
 ## Planned
 

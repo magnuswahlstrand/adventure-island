@@ -6,7 +6,6 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
-	"image/gif"
 	"math/rand"
 	"time"
 
@@ -20,9 +19,10 @@ import (
 )
 
 var (
-	objectImage    *ebiten.Image
-	characterImage *ebiten.Image
-	tilesImage     *ebiten.Image
+	objectImage         *ebiten.Image
+	characterImage      *ebiten.Image
+	characterColorImage *ebiten.Image
+	tilesImage          *ebiten.Image
 )
 
 var hairColors = []struct {
@@ -56,16 +56,6 @@ var hairColors = []struct {
 }
 
 func addFrame(img image.Image) image.Image {
-	opts := gif.Options{
-		NumColors: 4,
-		Drawer:    draw.FloydSteinberg,
-	}
-	fmt.Println(opts)
-	// b := img.Bounds()
-
-	// More or less taken from the image/gif package
-	// pimg := image.NewPaletted(b, palette.Plan9[:opts.NumColors])
-	// pimg := image.NewPaletted(b, palette.WebSafe[:128]),
 
 	hairColor := color.NRGBA{106, 72, 52, 255}
 	hairDarkColor := color.NRGBA{67, 46, 39, 255}
@@ -93,31 +83,6 @@ func addFrame(img image.Image) image.Image {
 		},
 	)
 
-	// // pimg.Palette.Convert(c color.Color)
-
-	// if opts.Quantizer != nil {
-	// 	pimg.Palette = opts.Quantizer.Quantize(make(color.Palette, 0, opts.NumColors), img)
-	// }
-
-	// draw.Draw(pimg, newImg.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
-	// b = b.Union(image.Rect(5, 5, 50, 50))
-
-	// draw.Draw(pimg, b, &image.Uniform{color.White}, image.Point{10, 10})
-	// // draw.Draw(newImg, newImg.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
-
-	// // paste PNG image OVER to newImage
-	// draw.Draw(newImg, newImg.Bounds(), img, img.Bounds().Min, draw.Over)
-	// draw.Draw(pimg, b, img, img.Bounds().Min, draw.Over)
-
-	// draw.Draw(pimg, pimg.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
-
-	// paste PNG image OVER to newImage
-	// draw.Draw(pimg, pimg.Bounds(), img, img.Bounds().Min, draw.Over)
-
-	// draw.Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point, op draw.Op)
-	// opts.Drawer.Draw(dst draw.Image, r image.Rectangle, src image.Image, sp image.Point)
-	// opts.Drawer.Draw(pimg, b, img, image.ZP)
-
 	return pimg
 }
 
@@ -128,21 +93,24 @@ func init() {
 	}
 	tilesImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 
-	img, _, err = image.Decode(bytes.NewReader(resources.Character_png))
+	img, _, err = image.Decode(bytes.NewReader(resources.Objects_png))
+	if err != nil {
+		log.Fatal(err)
+	}
+	objectImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 
+	img, _, err = image.Decode(bytes.NewReader(resources.Character_png))
 	if err != nil {
 		log.Fatal(err)
 	}
 	img = addFrame(img)
 	characterImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 
-	img, _, err = image.Decode(bytes.NewReader(resources.Objects_png))
-
+	img, _, err = image.Decode(bytes.NewReader(resources.Character_color_png))
 	if err != nil {
 		log.Fatal(err)
 	}
-	objectImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
-
+	characterColorImage, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 }
 
 const (
@@ -173,33 +141,53 @@ func subObject(typ entity.Type, frame int) *ebiten.Image {
 	return objectImage.SubImage(image.Rect(sx, sy, sx+width, sy+height)).(*ebiten.Image)
 }
 
-func subCharacter(dir, frame int) *ebiten.Image {
+func subCharacter(e entity.Entity, frame int) *ebiten.Image {
 	charWidth := 16
 	charHeight := 32
 	sx := frame * charWidth
 
 	var direction int
-	switch dir {
+	switch e.Position.Theta {
 	case 0:
 		direction = 2
 	case 2:
 		direction = 0
 	default:
-		direction = dir
+		direction = e.Position.Theta
+	}
+	sy := direction * charHeight
 
+	// offset := frame % 2
+
+	// Get color based on user ID
+	var headIndex, bodyIndex int
+	l := len(e.ID)
+	fmt.Sscanf(e.ID[l-3:l-2], "%X", &headIndex)
+	fmt.Sscanf(e.ID[l-1:l], "%X", &bodyIndex)
+
+	// Offset based on color
+	bodyColorX := charWidth * 4 * (bodyIndex % 12)
+	headColorX := charWidth * 4 * (headIndex % 12)
+
+	tmpImg := image.NewNRGBA(image.Rect(0, 0, 16, 32))
+	draw.Draw(tmpImg, image.Rect(0, 16, 16, 32), characterColorImage, image.Pt(bodyColorX+sx, 16+sy), draw.Src)
+	draw.Draw(tmpImg, image.Rect(0, 0, 16, 16), characterColorImage, image.Pt(headColorX+sx, sy), draw.Src)
+
+	tmpImg2, err := ebiten.NewImageFromImage(tmpImg, ebiten.FilterDefault)
+	if err != nil {
+		log.Fatal("Error while converting image", err)
 	}
 
-	sy := direction * charHeight
-	return characterImage.SubImage(image.Rect(sx, sy, sx+charWidth, sy+charHeight)).(*ebiten.Image)
+	return tmpImg2
 }
 
-func Sprite(e *entity.Entity) *ebiten.Image {
+func Sprite(e entity.Entity) *ebiten.Image {
 	t := time.Now().Nanosecond() / 1000 / 1000 / 250
 
 	var img *ebiten.Image
 	switch e.Type {
 	case entity.Character:
-		img = subCharacter(e.Position.Theta, t%4)
+		img = subCharacter(e, t%4)
 	case entity.Coin:
 		img = subObject(e.Type, t%4)
 	default:

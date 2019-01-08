@@ -29,9 +29,10 @@ const (
 )
 
 var (
-	score int
-	p     entity.Entity
-	p2    entity.Entity
+	hair, body = 0, 0
+	score      int
+	p          entity.Entity
+	dummies    []entity.Entity
 )
 
 var (
@@ -60,31 +61,32 @@ func randomWalk() {
 
 	var c types.Position
 
-	if time.Now().Nanosecond()%10 == 0 {
+	for i, d := range dummies {
+		if (time.Now().Nanosecond()+1000*i)%20000 == 0 {
 
-		switch rand.Intn(4) {
-		case 0:
-			c.Coord = p2.Position.Add(Up)
-			c.Theta = 0
-		case 1:
-			c.Coord = p2.Position.Add(Left)
-			c.Theta = 3
-		case 2:
-			c.Coord = p2.Position.Add(Down)
-			c.Theta = 2
-		case 3:
-			c.Coord = p2.Position.Add(Right)
-			c.Theta = 1
-		}
+			switch rand.Intn(4) {
+			case 0:
+				c.Coord = d.Position.Add(Up)
+				c.Theta = 0
+			case 1:
+				c.Coord = d.Position.Add(Left)
+				c.Theta = 3
+			case 2:
+				c.Coord = d.Position.Add(Down)
+				c.Theta = 2
+			case 3:
+				c.Coord = d.Position.Add(Right)
+				c.Theta = 1
+			}
 
-		e, err := g.PerformAction(p2, c)
-		if err != nil {
-			log.Errorf("invalid move %s", p2)
-		} else {
-			p2 = e
+			e, err := g.PerformAction(d, c)
+			if err != nil {
+				log.Errorf("invalid move %s", e)
+			} else {
+				dummies[i] = e
+			}
 		}
 	}
-
 }
 
 func update(screen *ebiten.Image) error {
@@ -99,6 +101,19 @@ func update(screen *ebiten.Image) error {
 
 	if dummyPlayer {
 		randomWalk()
+	}
+
+	switch {
+	case inpututil.IsKeyJustPressed(ebiten.KeyH):
+		hair = (hair + 1) % 12
+	case inpututil.IsKeyJustPressed(ebiten.KeyJ):
+		body = (body + 1) % 12
+	case inpututil.IsKeyJustPressed(ebiten.KeyP):
+		e, err := g.NewPlayer()
+		if err != nil {
+			log.Fatal(err)
+		}
+		dummies = append(dummies, e)
 	}
 
 	var c types.Position
@@ -131,11 +146,14 @@ func update(screen *ebiten.Image) error {
 	render.DrawWorld(world, screen)
 
 	for _, e := range g.Entities() {
-		render.Draw(&e, screen)
+		if e.ID == p.ID {
+			e.ID = fmt.Sprintf(e.ID[:len(e.ID)-4]+"0%X0%X", hair, body)
+		}
+		render.Draw(e, screen)
 	}
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS()))
-	// ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d", score))
+	// ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d\n\n\n\n\n\n\n\n\nKeys: WASD + H, J, P", score))
 	return nil
 }
 
@@ -157,7 +175,7 @@ func main() {
 	flag.StringVar(&worldName, "world", "", "name of the world to play on")
 	flag.Parse()
 
-	addr, worldName, _, secure, dummy = conf.Conf(addr, worldName, dev, secure, dummy)
+	addr, worldName, dev, secure, dummy = conf.Conf(addr, worldName, dev, secure, dummy)
 	dummyPlayer = dummy
 
 	opts := []game.Option{}
@@ -166,7 +184,7 @@ func main() {
 	}
 
 	if dev {
-		opts = append(opts, game.DevServer("10001", secure))
+		opts = append(opts, game.DevServer("localhost:10001"))
 	}
 
 	if addr != "" {
@@ -185,10 +203,11 @@ func main() {
 	}
 
 	if dummyPlayer {
-		p2, err = g.NewPlayer()
+		p2, err := g.NewPlayer()
 		if err != nil {
 			log.Fatal(err)
 		}
+		dummies = append(dummies, p2)
 	}
 
 	world = g.World()
