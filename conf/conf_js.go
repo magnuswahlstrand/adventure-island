@@ -7,18 +7,19 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/apex/log"
+	log "github.com/sirupsen/logrus"
+
 	"honnef.co/go/js/dom"
 )
 
 var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
-func Conf() (addr string, worldName string, dev bool, secure bool, dummy bool) {
+func Conf(addr string, worldName string, dev bool, secure bool, dummy bool) (string, string, bool, bool, bool) {
 
 	u, err := url.Parse(document.DocumentURI())
 	if err != nil {
-		log.Errorf("unexpected error parsing URI: %s", err)
-		return
+		log.Fatalf("unexpected error parsing URI: %s", err)
+		return "", "", false, false, false
 	}
 
 	if u.Query().Get("addr") != "" {
@@ -49,6 +50,7 @@ func Conf() (addr string, worldName string, dev bool, secure bool, dummy bool) {
 	default:
 		secure = false
 	}
+
 	fmt.Println("TLS (secure):", secure)
-	return
+	return addr, worldName, dev, secure, dummy
 }

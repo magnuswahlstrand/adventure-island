@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	_ "image/png"
 	"math/rand"
@@ -75,12 +76,19 @@ func randomWalk() {
 			c.Coord = p2.Position.Add(Right)
 			c.Theta = 1
 		}
-		p2, _ = g.PerformAction(p2, c)
+
+		e, err := g.PerformAction(p2, c)
+		if err != nil {
+			log.Errorf("invalid move %s", p2)
+		} else {
+			p2 = e
+		}
 	}
 
 }
 
 func update(screen *ebiten.Image) error {
+
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
@@ -119,14 +127,15 @@ func update(screen *ebiten.Image) error {
 		}
 		score = calculateScore(p.ID, g.Entities())
 	}
+
 	render.DrawWorld(world, screen)
 
 	for _, e := range g.Entities() {
 		render.Draw(&e, screen)
 	}
 
-	// ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS()))
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d", score))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS()))
+	// ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %d", score))
 	return nil
 }
 
@@ -139,7 +148,16 @@ var (
 
 func main() {
 
-	addr, worldName, dev, secure, dummy := conf.Conf()
+	var addr, worldName string
+	var secure, dev, dummy bool
+	flag.BoolVar(&dummy, "dummy", false, "create a dummy player who walks around randomly, mostly for development purposes")
+	flag.BoolVar(&dev, "dev", false, "start the development server on local machine on :10001")
+	flag.BoolVar(&secure, "secure", false, "enable TLS")
+	flag.StringVar(&addr, "addr", "", "address to remote server: default: run local mode")
+	flag.StringVar(&worldName, "world", "", "name of the world to play on")
+	flag.Parse()
+
+	addr, worldName, _, secure, dummy = conf.Conf(addr, worldName, dev, secure, dummy)
 	dummyPlayer = dummy
 
 	opts := []game.Option{}
@@ -148,7 +166,7 @@ func main() {
 	}
 
 	if dev {
-		opts = append(opts, game.DevServer("localhost:10001", secure))
+		opts = append(opts, game.DevServer("10001", secure))
 	}
 
 	if addr != "" {
@@ -174,7 +192,8 @@ func main() {
 	}
 
 	world = g.World()
+
 	if err := ebiten.Run(update, screenWidth, screenHeight, 2, "Tiles (Ebiten Demo)"); err != nil {
-		log.Fatal(err)
+		log.Fatal("Game exited: ", err)
 	}
 }
