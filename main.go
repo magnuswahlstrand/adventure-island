@@ -23,11 +23,6 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-const (
-	screenWidth  = 160
-	screenHeight = 160
-)
-
 var (
 	hair, body = 0, 0
 	score      int
@@ -212,7 +207,7 @@ func main() {
 
 	world = g.World()
 
-	if err := ebiten.Run(update, screenWidth, screenHeight, 2, "Tiles (Ebiten Demo)"); err != nil {
+	if err := ebiten.Run(update, world.Width*16, world.Height*16, 2, "Tiles (Ebiten Demo)"); err != nil {
 		log.Fatal("Game exited: ", err)
 	}
 }
