@@ -57,20 +57,20 @@ func randomWalk() {
 	var c types.Position
 
 	for i, d := range dummies {
-		if (time.Now().Nanosecond()/1000000+i)%10 == 0 {
+		if (time.Now().Nanosecond()/100000+i)%30 == 0 {
 
 			switch rand.Intn(4) {
 			case 0:
-				c.Coord = d.Position.Add(Up)
+				c = d.Position.Add(Up)
 				c.Theta = 0
 			case 1:
-				c.Coord = d.Position.Add(Left)
+				c = d.Position.Add(Left)
 				c.Theta = 3
 			case 2:
-				c.Coord = d.Position.Add(Down)
+				c = d.Position.Add(Down)
 				c.Theta = 2
 			case 3:
-				c.Coord = d.Position.Add(Right)
+				c = d.Position.Add(Right)
 				c.Theta = 1
 			}
 
@@ -113,18 +113,17 @@ func update(screen *ebiten.Image) error {
 	if leftPressed() || rightPressed() || upPressed() || downPressed() {
 		switch {
 		case upPressed():
-			c.Coord = p.Position.Add(Up)
+			c = p.Position.Add(Up)
 			c.Theta = 0
 		case leftPressed():
-			c.Coord = p.Position.Add(Left)
+			c = p.Position.Add(Left)
 			c.Theta = 3
 		case downPressed():
-			c.Coord = p.Position.Add(Down)
+			c = p.Position.Add(Down)
 			c.Theta = 2
 		case rightPressed():
-			c.Coord = p.Position.Add(Right)
+			c = p.Position.Add(Right)
 			c.Theta = 1
-
 		}
 
 		e, err := g.PerformAction(p, c)
@@ -139,9 +138,23 @@ func update(screen *ebiten.Image) error {
 	render.DrawWorld(world, screen)
 
 	for _, e := range g.Entities() {
+
+		// Change color
 		if e.ID == p.ID {
 			e.ID = fmt.Sprintf(e.ID[:len(e.ID)-4]+"0%X0%X", hair, body)
 		}
+
+		if e.Type == entity.Character && world.At(e.Position.Coord) == types.Water {
+
+			render.Draw(entity.Entity{
+				"",
+				entity.Bridge,
+				e.Position.Add(types.C(-1, 1)),
+				"",
+			}, screen)
+
+		}
+
 		render.Draw(e, screen)
 	}
 

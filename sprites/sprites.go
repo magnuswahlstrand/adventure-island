@@ -128,13 +128,18 @@ func SubImage(t types.Tile) *ebiten.Image {
 	return tilesImage.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image)
 }
 
-func subObject(typ entity.Type, frame int) *ebiten.Image {
+func subObject(e entity.Entity, frame int) *ebiten.Image {
 	var width, height, offsetX, offsetY, sx, sy int
-	switch typ {
+	switch e.Type {
 	case entity.Coin:
 		width, height = 16, 16
 		offsetY = 62
 		frame = frame % 4
+	case entity.Bridge:
+		width, height = 48, 48
+		offsetX = 224
+		offsetY = 96
+		frame = e.Position.Theta % 2
 	}
 	sx = offsetX + frame*width
 	sy = offsetY
@@ -188,8 +193,8 @@ func Sprite(e entity.Entity) *ebiten.Image {
 	switch e.Type {
 	case entity.Character:
 		img = subCharacter(e, t%4)
-	case entity.Coin:
-		img = subObject(e.Type, t%4)
+	case entity.Coin, entity.Bridge:
+		img = subObject(e, t%4)
 	default:
 		log.Fatalf("Entity type %s is not valid, shutting down", e)
 	}
