@@ -6,6 +6,7 @@ import (
 	"fmt"
 	_ "image/png"
 	"math/rand"
+	"os"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -217,8 +218,16 @@ func main() {
 	}
 
 	world = g.World()
-
+	printWd()
 	if err := ebiten.Run(update, world.Width*16, world.Height*16, 2, "Tiles (Ebiten Demo)"); err != nil {
 		log.Fatal("Game exited: ", err)
 	}
+}
+
+func printWd() {
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dir)
 }
