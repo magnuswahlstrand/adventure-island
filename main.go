@@ -94,9 +94,7 @@ func update(screen *ebiten.Image) error {
 		return errors.New("Game terminated by player")
 	}
 
-	if dummyPlayer {
-		randomWalk()
-	}
+	randomWalk()
 
 	switch {
 	case inpututil.IsKeyJustPressed(ebiten.KeyH):
